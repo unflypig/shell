@@ -1,3 +1,6 @@
+#Author:zhangtao@melinkr.com
+#date:2016年11月11日17:56:45
+#Function:This shell is used to set KF3 vps config 
 #!/bin/bash
 #set -x
 WORK_DIR="/root/files/for-vip/"
@@ -39,14 +42,14 @@ kf_get_vps_group_list(){
 	while [ $GROUPS_NUM -gt 0 ]
 	do
 		local VPS_LIST=`cat ${VPS_LIST_FILE_PATH} | head -n ${end} | tail -n +${head}`
-		echo "################################################################"
+		echo "#############################################################################"
 	    echo -e "GROUP $i:\n$VPS_LIST"	
 		head=`expr $head + $counts `
 		end=`expr $end + $counts`
 	    GROUPS_NUM=`expr $GROUPS_NUM - 1 `
 		let i+=1
 	done
-	echo "################################################################"
+	echo "#############################################################################"
 	read -p "Please Input which group you want to use:" choise
     while [ "$choise" -gt "$GROUPS_NUM_COPY" -o "$choise" = "" ]
 	do
@@ -90,6 +93,9 @@ kf_motify_ss_conf_1(){
 	[ -f *M_vip_${MAC}_* ] && rm -f ./*M_vip_${MAC}_*
 	echo -e "$conf_detail" > ./${BAND}M_vip_${MAC}_${PORT}
 	echo -e "$conf_detail" > ./${MAC}
+    echo    "#############################################################################"
+	echo -e "Config success!Below is detail:\n$conf_detail"
+    echo    "#############################################################################"
 }
 kf_motify_ss_conf_3(){
 	local BAND=$1
@@ -104,27 +110,30 @@ kf_motify_ss_conf_3(){
 	CHOOSE_VPS_3=`echo -e "$CHOOSE_VPS_LIST" | awk -F " " 'NR==3 {print $0}'`
 
 	passwd=`kf_get_vps_info_via_port $PORT1`
+	passwd=`echo $passwd | sed 's/ //g'`
     conf_detail1=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT1,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_1\",/g" ./config_template_1.conf`
 	passwd=`kf_get_vps_info_via_port $PORT2`
+	passwd=`echo $passwd | sed 's/ //g'`
     conf_detail2=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT2,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_2\",/g" ./config_template_1.conf`
 	passwd=`kf_get_vps_info_via_port $PORT3`
+	passwd=`echo $passwd | sed 's/ //g'`
     conf_detail3=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT3,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_3\",/g" ./config_template_1.conf`
 	conf_detailall=`echo -e "$conf_detail1\n$conf_detail2\n$conf_detail3"`
 	CONF_NAME_NOTE="${BAND}M_vip_${MAC}_${PORT}"
 	[ -f *M_vip_${MAC}_* ] && rm -f ./*M_vip_${MAC}_*
 	echo -e "$conf_detailall" > ./${BAND}M_vip_${MAC}_${PORT1}_${PORT2}_${PORT3}
 	echo -e "$conf_detailall" > ./${MAC}
-    echo    "###################################################################"
+    echo    "#############################################################################"
 	echo -e "Config success!Below is detail:\n$conf_detailall"
-    echo    "###################################################################"
+    echo    "#############################################################################"
 }
-echo "###################################################################"
-echo "# This shell is hlep you to give config file to a new router      #"               
-echo "# Email: zhangtao@melinkr.com                                     #"
-echo "#                                                                 #"
-echo "# Author:unflypig                                                 #"
-echo "# date:2016年11月11日16:40:33                                     #"
-echo "###################################################################"
+echo "#############################################################################"
+echo "# This shell is hlep you to give config file to a new router                #"               
+echo "# Email: zhangtao@melinkr.com                                               #"
+echo "#                                                                           #"
+echo "# Author:unflypig                                                           #"
+echo "# date:2016年11月11日16:40:33                                               #"
+echo "#############################################################################"
 echo ""
 read -p "Please Input MAC:" MAC
 str=$MAC;typeset -l str;MAC=$str;
