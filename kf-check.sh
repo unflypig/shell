@@ -25,7 +25,8 @@ while true ; do
     else                                                           
         echo -e "[${cur_time}] ping $url fail" >> $LOG_FILE_PATH   
     fi                                                             
-    url="192.168.10.1"                                                                                          
+    #gateway
+    url=`ubus call network.interface.wan status | grep nexthop | grep -oE '([0-9]{1,3}.){3}.[0-9]{1,3}'`                                                                                      
     ping $url -c 2 -w 2 > /dev/null                                                                             
     if [ $? = 0 ];then                                                                                                       
         echo -e "[${cur_time}] ping $url success" >> $LOG_FILE_PATH                                                          
