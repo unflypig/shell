@@ -8,8 +8,10 @@ while true ; do
     connect_num_es=`cat /proc/net/nf_conntrack|grep ES|wc -l`                                                            
     echo -e "[${cur_time}] connect num all: ${connect_num_all}" >> $LOG_FILE_PATH                                        
     echo -e "[${cur_time}] connect num es: ${connect_num_es}" >> $LOG_FILE_PATH                                          
-    clients_num_all=`cat /proc/net/arp | grep 192.168.133 | grep 0x2|wc -l`                                              
-    clients_num_ap=`cat /proc/net/arp | grep 192.168.133 | grep 0x2 |grep 00:b0 |wc -l`                                  
+	lanIp=`uci get network.lan.ipaddr | grep -oE '([0-9]{1,3}\.){2}[0-9]{1,3}'`
+	apMac=""
+    clients_num_all=`cat /proc/net/arp | grep $lanIp | grep 0x2|wc -l`                                              
+    clients_num_ap=`cat /proc/net/arp | grep $lanIp | grep 0x2  | grep $apMac |wc -l`                                  
     printf "[${cur_time}] client num: all %10s          ap:%10s\n" "$clients_num_all" "$clients_num_ap" >> $LOG_FILE_PATH
     url="114.114.114.114"                                                                                                
     ping $url -c 2 -w 2 > /dev/null                                                                                      
