@@ -48,7 +48,8 @@ while true ; do
         echo -e "[${cur_time}] ping $url fail" >> $LOG_FILE_PATH                                                             
     fi                                                                                                          
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ifconfig info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
-    echo -e "`ifconfig | tail -n 18| head -n 8`" >> $LOG_FILE_PATH                                                           
+	line=`ifconfig | grep "eth0.2" -n | grep -oE '^[0-9]{1,3}'`
+    echo -e "`ifconfig | head -n `expr $line + 6` | tail -n 7`" >> $LOG_FILE_PATH                                                           
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ps info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
     ps www >>  $LOG_FILE_PATH                                                                                             
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>top info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
