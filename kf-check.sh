@@ -18,7 +18,6 @@ while true ; do
     echo -e "[${cur_time}] connect num all: ${connect_num_all}" >> $LOG_FILE_PATH                                        
     echo -e "[${cur_time}] connect num es: ${connect_num_es}" >> $LOG_FILE_PATH                                          
 	lanIp=`uci get network.lan.ipaddr | grep -oE '([0-9]{1,3}\.){2}[0-9]{1,3}'`
-	if [ ]
     clients_num_all=`cat /proc/net/arp | grep $lanIp | grep 0x2|wc -l`                                              
 	if  [ $apMac = "no" ];then
 		clients_num_ap=0
