@@ -79,7 +79,7 @@ kf_get_vps_group_list(){
 kf_get_vps_info_via_port(){
     port=$1
 	PASSWD_FILE_PATH="/root/files/for-vip/pass"
-	passwd=`cat $PASSWD_FILE_PATH | grep \"$port\" | awk -F: '{print $2}'`
+	passwd=`cat $PASSWD_FILE_PATH | grep \"$port\" | awk -F: '{print $2}'|grep -oE '\"\w+\"'`
 	echo $passwd
 }
 kf_motify_ss_conf_1(){
@@ -128,7 +128,7 @@ kf_motify_ss_conf_3(){
     echo    "#############################################################################"
 }
 echo "#############################################################################"
-echo "# This shell is hlep you to give config file to a new router                #"               
+echo "# This shell is used to hlep you to give config file to a new router        #"               
 echo "# Email: zhangtao@melinkr.com                                               #"
 echo "#                                                                           #"
 echo "# Author:unflypig                                                           #"
