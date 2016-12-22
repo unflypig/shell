@@ -1,7 +1,6 @@
-#!/bin/sh                                                                                                                                                                        
-#echo hi                                                                                                                                                                         
-#set -x                                                                                                                                                                          
-LOG_FILE_PATH="/tmp/check.log"                                                                                                                                                   
+#!/bin/sh
+#set -x
+LOG_FILE_PATH="/tmp/check.log"
 cnts=$#
 if [ $cnts == 0 ];then
 	apMac="no"
@@ -59,5 +58,5 @@ while true ; do
     cat /proc/cpuinfo >> $LOG_FILE_PATH                                                                                      
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>memery  info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH              
     cat /proc/meminfo >> $LOG_FILE_PATH                                                                                      
-    sleep 5 
+    sleep 180 
 done                             
