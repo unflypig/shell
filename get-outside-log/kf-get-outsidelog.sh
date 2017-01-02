@@ -3,11 +3,11 @@
 #Function:This script is used to get outsidelog from alllog
 #!/bin/bash
 #set -x
-LOG_FILE_PATH="/$WORK_DIR/shell/get-outside-log/result.log"
 KF3_MAC_LIST_FILE_PATH="/root/files/for-vip/"
 WORK_DIR="/root/files/for-vip"
 LOG_DIR="/root/kflogs"
 LAST_LOG_FILE_NAME_FILE_PATH="$WORK_DIR/shell/get-outside-log/last-log.conf"
+LOG_FILE_PATH="/$WORK_DIR/shell/get-outside-log/result.log"
 KF3_MAC_LIST=`ls -lh $WORK_DIR | grep -oE '[0-9]{1,2}M_vip_\w{12}_\w+' | grep -oE '[0-9A-Za-z]{12}'`
 kf_get_latest_log_file_name(){
     local mac=$1
@@ -32,13 +32,13 @@ kf_get_outside_network_log(){
 	[ -f $LOG_DIR/$mac/$logFileName ] && cat $LOG_DIR/$mac/$logFileName | grep -E '\[www' > $LOG_DIR/$mac/latest-outside-check-$currentTime.log
 }
 while true;do
+    echo "" > $LOG_FILE_PATH
     for mac in $KF3_MAC_LIST;do
-    	echo "" > $LOG_FILE_PATH
         echo "start to deal with $mac" >> $LOG_FILE_PATH 
         currentLogFileName=`kf_get_last_log_file_name $mac` 
         latestLogFileName=`kf_get_latest_log_file_name $mac`
-        if [ $currentLogFileName != $latestLogFileName ];then
-    		echo "latest log file hase changed,start to refresh" >> LOG_FILE_PATH
+        if [ "$currentLogFileName" != "$latestLogFileName" ];then
+    		echo "latest log file hase changed,start to refresh" >> $LOG_FILE_PATH
             #latest log has changed
             cat $LAST_LOG_FILE_NAME_FILE_PATH | grep $mac > /dev/null
             if [ $? = 0 ];then
