@@ -68,10 +68,10 @@ kf_get_vps_group_list(){
 	CHOOSE_PORT=$choise
 	case $CHOOSE_VPS_COUNT in
 		1)
-            kf_motify_ss_conf_1 $BAND_WIDTH  "$CHOOSE_PORT" $MAC
+            kf_motify_ss_conf_1 $BAND_WIDTH  "$CHOOSE_PORT" $MAC $NOTE
 		;;
 		3)
-            kf_motify_ss_conf_3 $BAND_WIDTH  "$CHOOSE_PORT" $MAC
+            kf_motify_ss_conf_3 $BAND_WIDTH  "$CHOOSE_PORT" $MAC $NOTE
 		;;
 	esac
 }
@@ -86,13 +86,14 @@ kf_motify_ss_conf_1(){
 	local BAND=$1
 	local PORT=$2
 	local MAC=$3
-    CONFIG_TEMPLATE_1="./config_template_1.conf"
+	local NOTE=$4
+	CONFIG_TEMPLATE_1="/root/files/for-vip/config_template_1.conf"
 	passwd=`kf_get_vps_info_via_port $PORT`
-    conf_detail=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_LIST\",/g" ./config_template_1.conf`
+	conf_detail=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_LIST\",/g" /root/files/for-vip/config_template_1.conf`
 	CONF_NAME_NOTE="${BAND}M_vip_${MAC}_${PORT}"
-	[ -f *M_vip_${MAC}_* ] && rm -f ./*M_vip_${MAC}_*
-	echo -e "$conf_detail" > ./${BAND}M_vip_${MAC}_${PORT}
-	echo -e "$conf_detail" > ./${MAC}
+	[ -f $WORK_DIR/*M_vip_${MAC}_* ] && rm -f /root/files/for-vip/*M_vip_${MAC}_*
+	echo -e "$conf_detail" > /root/files/for-vip/${BAND}M_vip_${MAC}_${PORT}_[${NOTE}]
+	echo -e "$conf_detail" > /root/files/for-vip/${MAC}
     echo    "#############################################################################"
 	echo -e "Config success!Below is detail:\n$conf_detail"
     echo    "#############################################################################"
@@ -101,7 +102,8 @@ kf_motify_ss_conf_3(){
 	local BAND=$1
 	local PORT=$2
 	local MAC=$3
-    CONFIG_TEMPLATE_1="./config_template_1.conf"
+	local NOTE=$4
+	CONFIG_TEMPLATE_1="/root/files/for-vip/config_template_1.conf"
 	PORT1=`echo $PORT | awk -F " " '{print $1}'`
 	PORT2=`echo $PORT | awk -F " " '{print $2}'`
 	PORT3=`echo $PORT | awk -F " " '{print $3}'`
@@ -111,18 +113,27 @@ kf_motify_ss_conf_3(){
 
 	passwd=`kf_get_vps_info_via_port $PORT1`
 	passwd=`echo $passwd | sed 's/ //g'`
-    conf_detail1=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT1,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_1\",/g" ./config_template_1.conf`
+    conf_detail1=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT1,/g" -e \
+	    "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e \
+		    "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_1\",/g"\
+		       	$CONFIG_TEMPLATE_1`
 	passwd=`kf_get_vps_info_via_port $PORT2`
 	passwd=`echo $passwd | sed 's/ //g'`
-    conf_detail2=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT2,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_2\",/g" ./config_template_1.conf`
+    conf_detail2=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT2,/g"\
+       	-e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e \
+		    "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_2\",/g" \
+			    $CONFIG_TEMPLATE_1`
 	passwd=`kf_get_vps_info_via_port $PORT3`
 	passwd=`echo $passwd | sed 's/ //g'`
-    conf_detail3=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT3,/g" -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e "s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_3\",/g" ./config_template_1.conf`
+    conf_detail3=`sed  -e "s/\"server_port\":9003,/\"server_port\":$PORT3,/g" \
+	    -e "s/\"password\":\"Maft0ic7cyam9ib\"/\"password\":$passwd/g" -e\
+	       	"s/\"server\":\"47.90.67.206\",/\"server\":\"$CHOOSE_VPS_3\",/g" \
+			    $CONFIG_TEMPLATE_1`
 	conf_detailall=`echo -e "$conf_detail1\n$conf_detail2\n$conf_detail3"`
 	CONF_NAME_NOTE="${BAND}M_vip_${MAC}_${PORT}"
-	[ -f *M_vip_${MAC}_* ] && rm -f ./*M_vip_${MAC}_*
-	echo -e "$conf_detailall" > ./${BAND}M_vip_${MAC}_${PORT1}_${PORT2}_${PORT3}
-	echo -e "$conf_detailall" > ./${MAC}
+	[ -f $WORK_DIR/*M_vip_${MAC}_* ] && rm -f /root/files/for-vip/*M_vip_${MAC}_*
+	echo -e "$conf_detailall" > /root/files/for-vip/${BAND}M_vip_${MAC}_${PORT1}_${PORT2}_${PORT3}_[${NOTE}]
+	echo -e "$conf_detailall" > /root/files/for-vip/${MAC}
     echo    "#############################################################################"
 	echo -e "Config success!Below is detail:\n$conf_detailall"
     echo    "#############################################################################"
@@ -144,6 +155,7 @@ if [ $? != 0 ];then
 	echo "$MAC is not available! Please check!"
 	exit 0
 fi
+read -p "Please Input Note for This Device(can be null):" NOTE
 read -p "Please Input BandWidth of This Router:" band
 kf_get_vps_group_list $band
 
