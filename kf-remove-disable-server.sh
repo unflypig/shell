@@ -15,8 +15,20 @@ kf_get_server_enable_and_disable_list_via_bw(){
     for server_ip in $server_list 
     do
     	#echo "start to deal with $server_ip"
-    	ping $server_ip -c 1 -w 2 > /dev/null
-    	if [ $? = 0 ];then
+	    local retry=3	
+		local ip_access="false"
+	    until [ $retry -lt 1 ]
+		do
+		    echo -e "Start to ping $server_ip"
+    	    ping $server_ip -c 1 -w 3 > /dev/null
+			if [ $? = 0 ];then
+				ip_access="true"
+				break
+			else
+			    retry=`expr $retry - 1`
+			fi
+		done
+    	if [ $ip_access = "true" ];then
     		#echo "$server_ip:1" >> $SERVER_ENABLE_CONF_FILE_PATH
             local server_enable_list="${server_enable_list}${server_ip}:1\n"
     	else
@@ -290,4 +302,5 @@ kf_main(){
 #kf_get_baundwhith_via_mac $1
 #kf_get_passwd_via_port $1
 #kf_change_disable_server $1 $2 $3 $4 $5
-kf_main
+kf_get_server_enable_and_disable_list_via_bw $1
+#kf_main
