@@ -4,6 +4,7 @@
 #!/bin/bash
 #set -x
 WORK_DIR="/root/files/for-vip/test"
+LOG_FILT_PATH="$WORK_DIR/kf-remove-disable-server.log"
 KF3_MAC_LIST=`ls -lh $WORK_DIR | grep -oE '[0-9]{1,2}M_vip_\w{12}_\w+' \
     | grep -oE '[0-9A-Za-z]{12}'`
 #this function will get if server is enable or not 
@@ -194,50 +195,66 @@ kf_change_disable_server(){
 kf_main(){
 	local mac_use_server_detail=`kf_get_conf_info_via_mac`
 	echo -e "################################mac use server detail#####################"
+	#echo -e "################################mac use server detail#####################" >> $LOG_FILT_PATH
 	echo -e "$mac_use_server_detail"
+	#echo -e "$mac_use_server_detail" >> $LOG_FILT_PATH
 	echo -e "##########################################################################"
+	#echo -e "##########################################################################" >> $LOG_FILT_PATH
 	for bw in  5 10 20 
 	do
         #step 1:get disable server ip list
 	    local disable_server_ip_list=`kf_get_server_disable_list_via_bw $bw`
 		if [ -z $disable_server_ip_list ];then
-		   echo -e "INFO:No Disable IP be Used, Stop!"	
-		   exit
+		   echo -e "INFO:No Disable IP be Used in ${bw}M device, Try Next Bandwidth!"	
+		   echo -e "INFO:No Disable IP be Used in ${bw}M device, Try Next Bandwidth!"	 >> $LOG_FILT_PATH
+		   continue
 	    fi
 	    echo -e "############################disable ip list ###########################"
+	    echo -e "############################disable ip list ###########################" >> $LOG_FILT_PATH
         echo -e "$disable_server_ip_list"		
+        echo -e "$disable_server_ip_list" >> $LOG_FILT_PATH	
 	    echo -e "#######################################################################"
+	    echo -e "#######################################################################" >> $LOG_FILT_PATH
 		for ip in $disable_server_ip_list 
 		do
 			local disable_ip=$ip
 			echo -e "INFO:Start to Deal With Disable IP:[$disable_ip]"
+			echo -e "INFO:Start to Deal With Disable IP:[$disable_ip]" >> $LOG_FILT_PATH
 			#step 2:get mac list who has used disable ip
 			local mac_who_use_disable_ip_list=`echo -e "$mac_use_server_detail" \
 			    | grep $disable_ip|grep -oE "^[0-9A-Za-z]{12}"`
-			if [  $mac_who_use_disable_ip_list ];then
+			if [  "$mac_who_use_disable_ip_list" ];then
 			    echo -e "#######################use disable ip mac list#####################"
+			    echo -e "#######################use disable ip mac list#####################" >> $LOG_FILT_PATH
                 echo -e "$mac_who_use_disable_ip_list"
+                echo -e "$mac_who_use_disable_ip_list" >> $LOG_FILT_PATH
 			    echo -e "###################################################################"
+			    echo -e "###################################################################" >> $LOG_FILT_PATH
 			    for mac in $mac_who_use_disable_ip_list
 			    do
 			    	echo -e "INFO:Start to Deal whith MAC:[$mac]"
+			    	echo -e "INFO:Start to Deal whith MAC:[$mac]" >> $LOG_FILT_PATH
                     #step 3:get baundwhith via mac
                     local bandwidth=`kf_get_baundwhith_via_mac $mac`
 			    	echo -e "INFO:The Bandwidth of $mac is $bandwidth"
+			    	echo -e "INFO:The Bandwidth of $mac is $bandwidth" >> $LOG_FILT_PATH
 			    	local conf_file="$WORK_DIR/$mac"
 			    	if [ -z $bandwidth ];then
 			    		echo "ERROR:Get Baundwhith Via MAC Fail [$mac]"
-			    		exit
+			    		echo "ERROR:Get Baundwhith Via MAC Fail [$mac]" >> $LOG_FILT_PATH
+						continue
 			    	fi
                     #step 4:get best server via bandwidth
 			    	local best_server_list=`kf_get_best_server_via_bw $bandwidth`
 			    	echo -e "INFO:Best Server List:\n$best_server_list"
+			    	echo -e "INFO:Best Server List:\n$best_server_list" >> $LOG_FILT_PATH
                     #step 5:check if which ip is not use in this conf file 
                     for ip in $best_server_list
 			    	do
 			    		local ip_format=`echo -e $ip \
 			    		    | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}"`
 			    		echo -e "INFO:Start to try $ip_format"
+			    		echo -e "INFO:Start to try $ip_format" >> $LOG_FILT_PATH
 			    		cat $conf_file | grep $ip_format > /dev/null
                         #this ip has not used in this conf file .we can go on ,or,we should use next ip 
 			    		if [ $? != 0 ];then
@@ -245,15 +262,22 @@ kf_main(){
 			    		   local passwd=`kf_get_passwd_via_port $best_port`
                            kf_change_disable_server $mac $disable_ip $best_port $ip_format $passwd > /dev/null
 			    		   echo "INFO:Remove Disable IP:$ip_format from $mac Config File Success!"
+			    		   echo "INFO:Remove Disable IP:$ip_format from $mac Config File Success!" >> $LOG_FILT_PATH
 			    		   echo "INFO:New Config File is:"
+			    		   echo "INFO:New Config File is:" >> $LOG_FILT_PATH
 			    		   echo -e "`cat $conf_file`"
-			    		   exit
+			    		   echo -e "`cat $conf_file`" >> $LOG_FILT_PATH 
+			    		   #exit
+						   break
+					    else
+			    		    echo -e "WARNING:$ip_format Has Already be Used in Config File,Try Next"
+			    		    echo -e "WARNING:$ip_format Has Already be Used in Config File,Try Next" >> $LOG_FILT_PATH
 			    		fi
-			    		echo -e "WARNING:$ip_format Has Already be Used in Config File,Try Next"
 			    	done
 			    done
 			else
 				echo -e "INFO:No MAC Use Disable ip [$disable_ip]"
+				echo -e "INFO:No MAC Use Disable ip [$disable_ip]" >> $LOG_FILT_PATH
 			fi
 		done
 	done
