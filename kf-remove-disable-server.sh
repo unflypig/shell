@@ -3,7 +3,7 @@
 #Function:This script is used to get if this server is useable by ping
 #!/bin/bash
 #set -x
-WORK_DIR="/root/files/for-vip/test"
+WORK_DIR="/root/files/for-vip"
 LOG_FILT_PATH="$WORK_DIR/kf-remove-disable-server.log"
 KF3_MAC_LIST=`ls -lh $WORK_DIR | grep -oE '[0-9]{1,2}M_vip_\w{12}_\w+' \
     | grep -oE '[0-9A-Za-z]{12}'`
@@ -19,7 +19,7 @@ kf_get_server_enable_and_disable_list_via_bw(){
 		local ip_access="false"
 	    until [ $retry -lt 1 ]
 		do
-		    echo -e "Start to ping $server_ip"
+		    #echo -e "Start to ping $server_ip"
     	    ping $server_ip -c 1 -w 3 > /dev/null
 			if [ $? = 0 ];then
 				ip_access="true"
@@ -218,55 +218,66 @@ kf_main(){
 	    local disable_server_ip_list=`kf_get_server_disable_list_via_bw $bw`
 		if [ -z $disable_server_ip_list ];then
 		   echo -e "INFO:No Disable IP be Used in ${bw}M device, Try Next Bandwidth!"	
-		   echo -e "INFO:No Disable IP be Used in ${bw}M device, Try Next Bandwidth!"	 >> $LOG_FILT_PATH
+		   cur_time=`date "+%y-%m-%d %H:%M:%S"`
+		   echo -e "[$cur_time] INFO:No Disable IP be Used in ${bw}M device, Try Next Bandwidth!"	 >> $LOG_FILT_PATH
 		   continue
 	    fi
 	    echo -e "############################disable ip list ###########################"
-	    echo -e "############################disable ip list ###########################" >> $LOG_FILT_PATH
+		cur_time=`date "+%y-%m-%d %H:%M:%S"`
+	    echo -e "[$cur_time] ############################disable ip list ###########################" >> $LOG_FILT_PATH
         echo -e "$disable_server_ip_list"		
         echo -e "$disable_server_ip_list" >> $LOG_FILT_PATH	
 	    echo -e "#######################################################################"
-	    echo -e "#######################################################################" >> $LOG_FILT_PATH
+		cur_time=`date "+%y-%m-%d %H:%M:%S"`
+	    echo -e "[$cur_time] #######################################################################" >> $LOG_FILT_PATH
 		for ip in $disable_server_ip_list 
 		do
 			local disable_ip=$ip
 			echo -e "INFO:Start to Deal With Disable IP:[$disable_ip]"
-			echo -e "INFO:Start to Deal With Disable IP:[$disable_ip]" >> $LOG_FILT_PATH
+		    cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			echo -e "[$cur_time] INFO:Start to Deal With Disable IP:[$disable_ip]" >> $LOG_FILT_PATH
 			#step 2:get mac list who has used disable ip
 			local mac_who_use_disable_ip_list=`echo -e "$mac_use_server_detail" \
 			    | grep $disable_ip|grep -oE "^[0-9A-Za-z]{12}"`
 			if [  "$mac_who_use_disable_ip_list" ];then
 			    echo -e "#######################use disable ip mac list#####################"
-			    echo -e "#######################use disable ip mac list#####################" >> $LOG_FILT_PATH
+		        cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    echo -e "[$cur_time] #######################use disable ip mac list#####################" >> $LOG_FILT_PATH
                 echo -e "$mac_who_use_disable_ip_list"
                 echo -e "$mac_who_use_disable_ip_list" >> $LOG_FILT_PATH
 			    echo -e "###################################################################"
-			    echo -e "###################################################################" >> $LOG_FILT_PATH
+		        cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    echo -e "[$cur_time] ###################################################################" >> $LOG_FILT_PATH
 			    for mac in $mac_who_use_disable_ip_list
 			    do
 			    	echo -e "INFO:Start to Deal whith MAC:[$mac]"
-			    	echo -e "INFO:Start to Deal whith MAC:[$mac]" >> $LOG_FILT_PATH
+		            cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    	echo -e "[$cur_time] INFO:Start to Deal whith MAC:[$mac]" >> $LOG_FILT_PATH
                     #step 3:get baundwhith via mac
                     local bandwidth=`kf_get_baundwhith_via_mac $mac`
 			    	echo -e "INFO:The Bandwidth of $mac is $bandwidth"
-			    	echo -e "INFO:The Bandwidth of $mac is $bandwidth" >> $LOG_FILT_PATH
+		            cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    	echo -e "[$cur_time] INFO:The Bandwidth of $mac is $bandwidth" >> $LOG_FILT_PATH
 			    	local conf_file="$WORK_DIR/$mac"
 			    	if [ -z $bandwidth ];then
 			    		echo "ERROR:Get Baundwhith Via MAC Fail [$mac]"
-			    		echo "ERROR:Get Baundwhith Via MAC Fail [$mac]" >> $LOG_FILT_PATH
+		                cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    		echo "[$cur_time] ERROR:Get Baundwhith Via MAC Fail [$mac]" >> $LOG_FILT_PATH
 						continue
 			    	fi
                     #step 4:get best server via bandwidth
 			    	local best_server_list=`kf_get_best_server_via_bw $bandwidth`
 			    	echo -e "INFO:Best Server List:\n$best_server_list"
-			    	echo -e "INFO:Best Server List:\n$best_server_list" >> $LOG_FILT_PATH
+		            cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    	echo -e "[$cur_time] INFO:Best Server List:\n$best_server_list" >> $LOG_FILT_PATH
                     #step 5:check if which ip is not use in this conf file 
                     for ip in $best_server_list
 			    	do
 			    		local ip_format=`echo -e $ip \
 			    		    | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}"`
 			    		echo -e "INFO:Start to try $ip_format"
-			    		echo -e "INFO:Start to try $ip_format" >> $LOG_FILT_PATH
+		                cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    		echo -e "[$cur_time] INFO:Start to try $ip_format" >> $LOG_FILT_PATH
 			    		cat $conf_file | grep $ip_format > /dev/null
                         #this ip has not used in this conf file .we can go on ,or,we should use next ip 
 			    		if [ $? != 0 ];then
@@ -274,22 +285,26 @@ kf_main(){
 			    		   local passwd=`kf_get_passwd_via_port $best_port`
                            kf_change_disable_server $mac $disable_ip $best_port $ip_format $passwd > /dev/null
 			    		   echo "INFO:Remove Disable IP:$ip_format from $mac Config File Success!"
-			    		   echo "INFO:Remove Disable IP:$ip_format from $mac Config File Success!" >> $LOG_FILT_PATH
+		                   cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    		   echo "[$cur_time] INFO:Remove Disable IP:$ip_format from $mac Config File Success!" >> $LOG_FILT_PATH
 			    		   echo "INFO:New Config File is:"
-			    		   echo "INFO:New Config File is:" >> $LOG_FILT_PATH
+		                   cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    		   echo "[$cur_time] INFO:New Config File is:" >> $LOG_FILT_PATH
 			    		   echo -e "`cat $conf_file`"
 			    		   echo -e "`cat $conf_file`" >> $LOG_FILT_PATH 
 			    		   #exit
 						   break
 					    else
 			    		    echo -e "WARNING:$ip_format Has Already be Used in Config File,Try Next"
-			    		    echo -e "WARNING:$ip_format Has Already be Used in Config File,Try Next" >> $LOG_FILT_PATH
+		                    cur_time=`date "+%y-%m-%d %H:%M:%S"`
+			    		    echo -e "[$cur_time] WARNING:$ip_format Has Already be Used in Config File,Try Next" >> $LOG_FILT_PATH
 			    		fi
 			    	done
 			    done
 			else
 				echo -e "INFO:No MAC Use Disable ip [$disable_ip]"
-				echo -e "INFO:No MAC Use Disable ip [$disable_ip]" >> $LOG_FILT_PATH
+		        cur_time=`date "+%y-%m-%d %H:%M:%S"`
+				echo -e "[$cur_time] INFO:No MAC Use Disable ip [$disable_ip]" >> $LOG_FILT_PATH
 			fi
 		done
 	done
@@ -302,5 +317,5 @@ kf_main(){
 #kf_get_baundwhith_via_mac $1
 #kf_get_passwd_via_port $1
 #kf_change_disable_server $1 $2 $3 $4 $5
-kf_get_server_enable_and_disable_list_via_bw $1
-#kf_main
+#kf_get_server_enable_and_disable_list_via_bw $1
+kf_main
