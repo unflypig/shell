@@ -3,6 +3,11 @@
 #Function:This script is used to get if this server is useable by ping
 #!/bin/bash
 #set -x
+ping 114.114.114.114 -c 5 -W 5
+if [ $? != 0 ];then
+    echo -e "[$cur_time] WARNING:Network is unreachable, Stop!" >> $LOG_FILT_PATH
+	exit
+fi
 WORK_DIR="/root/files/for-vip"
 LOG_FILT_PATH="$WORK_DIR/kf-remove-disable-server.log"
 KF3_MAC_LIST=`ls -lh $WORK_DIR | grep -oE '[0-9]{1,2}M_vip_\w{12}_\w+' \
@@ -15,12 +20,12 @@ kf_get_server_enable_and_disable_list_via_bw(){
     for server_ip in $server_list 
     do
     	#echo "start to deal with $server_ip"
-	    local retry=3	
+	    local retry=10	
 		local ip_access="false"
 	    until [ $retry -lt 1 ]
 		do
 		    #echo -e "Start to ping $server_ip"
-    	    ping $server_ip -c 1 -w 3 > /dev/null
+    	    ping $server_ip -c 1 -W 1 > /dev/null
 			if [ $? = 0 ];then
 				ip_access="true"
 				break
@@ -33,6 +38,9 @@ kf_get_server_enable_and_disable_list_via_bw(){
             local server_enable_list="${server_enable_list}${server_ip}:1\n"
     	else
     		#echo "$server_ip:0" >> $SERVER_ENABLE_CONF_FILE_PATH
+			echo "[$server_ip] is unreachable!" > /tmp/server-unreachable.log
+			mail -s "Server-unreachable-notify - `date`" 1085025884@qq.com < /tmp/server-unreachable.log
+			mail -s "Server-unreachable-notify - `date`" 2212811131@qq.com < /tmp/server-unreachable.log
             local server_enable_list="${server_enable_list}${server_ip}:0\n"
     	fi
     done
@@ -108,7 +116,7 @@ kf_get_best_server_via_bw(){
 	local ip_port_nums=""
 	for ip in $server_ip_list
 	do
-		ping $ip -c 1 -w 2 > /dev/null 
+		ping $ip -c 2 -w 2 > /dev/null 
 		if [ $? = 0 ];then
 		    local ip_port_nums="$ip:`echo -e \"$server_used_detail\"\
 		        | grep $ip |grep -oE \"[0-9]{4,5}:\" | wc -l`"
@@ -187,7 +195,7 @@ kf_change_disable_server(){
 		if [ $? = 0 ];then
 			local new_server_str="    \"server\":\"$new_ip\","
 			local new_port_str="    \"server_port\":$new_port,"
-			local new_passwd_str="    \"password\":\"$new_passwd\""
+			local new_passwd_str="    \"password\":$new_passwd"
 			sed -i "/$origin_ip/c\\$new_server_str" $tmp_file
 			sed -i "/server_port/c\\$new_port_str" $tmp_file
 			sed -i "/password/c\\$new_passwd_str" $tmp_file
