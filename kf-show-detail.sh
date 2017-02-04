@@ -30,7 +30,7 @@ for line in $MAC_LIST; do
     #printf "%-5s" "|$count" >> $RESULT_FILE_PATH
     printf "%-14s" "|$mac" >> $RESULT_FILE_PATH
     printf "%-6s" "|$bw" >> $RESULT_FILE_PATH
-    printf "%-45s" "|$ipaddr" >> $RESULT_FILE_PATH
+    printf "%-50s" "|$ipaddr" >> $RESULT_FILE_PATH
     printf "%-16s" "|$port " >> $RESULT_FILE_PATH
 	printf "%-22s" "|$online_time " >> $RESULT_FILE_PATH
 	printf "%-22s" "|$last_update_time " >> $RESULT_FILE_PATH
@@ -53,18 +53,18 @@ echo -e "$LIST_5M" > $LIST_5M_FILE_PATH
 echo -e "$LIST_10M" > $LIST_10M_FILE_PATH
 echo -e "$LIST_20M" > $LIST_20M_FILE_PATH
 echo -e "$LIST_UNKNOW" > $LIST_UNKNOW_FILE_PATH
-echo "+----+-------------+-----+-------------------------------------------------+---------------+------------------------------------------------------------------------------------------+" > $RESULT_FILE_PATH
+echo      "+----+-------------+-----+-------------------------------------------------+---------------+---------------------+---------------------+---------------------+-----------------------------+" > $RESULT_FILE_PATH
 printf "%-5s" "|num" >> $RESULT_FILE_PATH
 printf "%-14s" "|mac" >> $RESULT_FILE_PATH
 printf "%-6s" "|bw" >> $RESULT_FILE_PATH
-printf "%-45s" "|ip" >> $RESULT_FILE_PATH
+printf "%-50s" "|ip" >> $RESULT_FILE_PATH
 printf "%-16s" "|port" >> $RESULT_FILE_PATH
 printf "%-22s" "|online_time" >> $RESULT_FILE_PATH
 printf "%-22s" "|last_update_time" >> $RESULT_FILE_PATH
 printf "%-22s" "|offline__time" >> $RESULT_FILE_PATH
 printf "%-30s" "|note" >> $RESULT_FILE_PATH
 printf "|" >> $RESULT_FILE_PATH
-echo -e "\n+----+-------------+-----+-------------------------------------------------+---------------+------------------------------------------------------------------------------------------+" >> $RESULT_FILE_PATH
+echo -e "\n+----+-------------+-----+-------------------------------------------------+---------------+---------------------+---------------------+---------------------+-----------------------------+" >> $RESULT_FILE_PATH
 for bw in 1 5 10 20
 do
 	LIST_FILE_PATH="/root/files/for-vip/${bw}mlist"
@@ -72,7 +72,7 @@ do
     do
         printf "%-5s" "|$count" >> $RESULT_FILE_PATH
     	echo -e "$line" >> $RESULT_FILE_PATH
-        echo -e "+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+" >> $RESULT_FILE_PATH
+        echo -e "+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+" >> $RESULT_FILE_PATH
     	let count+=1
     done < $LIST_FILE_PATH
 done
