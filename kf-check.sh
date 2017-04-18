@@ -52,10 +52,8 @@ while true ; do
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ps info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
     ps www >>  $LOG_FILE_PATH                                                                                             
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>top info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
-    top -n 1 >> $LOG_FILE_PATH                                                                                               
-    echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>cpu  info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH             
-    cat /proc/cpuinfo >> $LOG_FILE_PATH                                                                                      
+    top -n 1 >> $LOG_FILE_PATH                                                                                                                                                                           
     echo -e ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>memery  info<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> $LOG_FILE_PATH              
-    cat /proc/meminfo >> $LOG_FILE_PATH                                                                                      
-    sleep 180 
+    cat /proc/meminfo |grep Mem>> $LOG_FILE_PATH                                                                                      
+    sleep 30 
 done                             
