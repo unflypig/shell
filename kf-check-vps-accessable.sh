@@ -8,7 +8,7 @@ server_ips="`cat /etc/shadowsocks/config.json|grep -E '\"server\"'|awk -F ':' '{
 while true;do
     for server_ip in $server_ips;do
         server_port="`cat /etc/shadowsocks/config.json|grep $server_ip|awk -F ':' '{print $3}'``"
-        nc -v -z -w 1 $server_ip $server_port|grep "open" -q
+        nc -v -z -w 1 $server_ip $server_port
         if [ "$?" = 0 ];then
             echo "[`date '+%y-%m-%d %H:%M:%S'`] connect to $server_ip $server_port success!" >> $LOG_PATH
         else
