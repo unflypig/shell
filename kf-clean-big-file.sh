@@ -16,9 +16,9 @@ kf_clean_big_file(){
 	local current_size=`ls -l $file_path|awk '{print $5}'`
 	if [ $current_size -gt $limit_size ];then
 		echo "File size is more then $limit_size,clean it!" >> $LOG_FILE_PATH
-		echo "File size is more then $limit_size,clean it!" > $file_path.tmp
-		tail -n $keep_line $file_path >> $file_path.tmp
-		cat $file_path.tmp > $file_path
+		echo "File size is more then $limit_size,clean it!" > file.tmp
+		tail -n $keep_line $file_path >> file.tmp
+		cat file.tmp > $file_path
 	else
 		echo "File size is less then $limit_size,do nothing!" >> $LOG_FILE_PATH
 	fi
