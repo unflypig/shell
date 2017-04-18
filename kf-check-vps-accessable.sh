@@ -16,4 +16,5 @@ while true;do
             echo "[`date '+%y-%m-%d %H:%M:%S'`] connect to $server_ip $server_port fail!" >> $LOG_PATH
         fi
     done
+    sleep 1
 done
