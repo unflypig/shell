@@ -52,6 +52,38 @@ then
     iptables -t nat -A OUTPUT -p tcp -m set  --match-set selflist dst -j REDIRECT --to-port 1080
 
 fi
+#唐路由模式
+    $ALL_MODE)
+        ipset list chinaiplist > /dev/null
+        if [ "$?" != "0" ];then
+            ipset creat chinaiplist hash:net
+        fi
+        ipset list serverlist > /dev/null
+        if [ "$?" != "0" ];then
+            ipset creat serverlist hash:net
+        fi
+
+        iptables -t nat -C PREROUTING -p tcp -m set  --match-set chinaiplist dst -j REDIRECT --to-port $ss_local_port
+        if [ $? != 0 ];then
+            iptables -t nat -I PREROUTING -p tcp -m set  --match-set chinaiplist dst -j REDIRECT --to-port $ss_local_port
+        fi
+
+        iptables -t nat -C PREROUTING -p tcp -m set  --match-set serverlist dst -j RETURN
+        if [ $? != 0 ];then
+            iptables -t nat -I PREROUTING -p tcp -m set  --match-set serverlist dst -j RETURN
+        fi
+
+        iptables -t nat -C OUTPUT -p tcp -m set  --match-set chinaiplist dst -j REDIRECT --to-port $ss_local_port
+        if [ $? != 0 ];then
+            iptables -t nat -I OUTPUT -p tcp -m set  --match-set chinaiplist dst -j REDIRECT --to-port $ss_local_port
+        fi
+
+        iptables -t nat -C OUTPUT -p tcp -m set  --match-set serverlist dst -j RETURN
+        if [ $? != 0 ];then
+            iptables -t nat -I OUTPUT -p tcp -m set  --match-set serverlist dst -j RETURN
+        fi
+        /tmp/kf/kf-add-cniplist-to-ipset.sh
+        ;;
 
 mode=`cat /etc/config/macfiltermode`
 enable=`cat /etc/config/macfilterenable`
