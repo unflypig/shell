@@ -1,6 +1,10 @@
 #Author:zhangtao@melinkr.com
 #Data:2017年05月27日13:52:28
 #Function:This scrip is used to clean over size file
+#配置文件格式
+#/etc/config/filesizectl 
+#/root/kflogs/outside.log:f:3000000
+#/tmp/kflogs/:d:1000000
 #!/bin/sh
 CONFIG_PATH="/etc/config/filesizectl"
 kf_get_file_list(){
